@@ -3,7 +3,25 @@ import AnimatedSection from './AnimatedSection';
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from 'lucide-react';
 
+// Função para validar e sanitizar URLs
+const sanitizeUrl = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    // Permite apenas URLs do WhatsApp
+    if (urlObj.hostname !== 'wa.me') {
+      throw new Error('URL inválida');
+    }
+    return urlObj.toString();
+  } catch (error) {
+    console.error('URL inválida:', error);
+    return '#';
+  }
+};
+
 const SalesContent = () => {
+  // URL do WhatsApp sanitizada
+  const whatsappUrl = sanitizeUrl('https://wa.me/11967336619');
+
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8">
       <AnimatedSection className="mb-16">
@@ -220,10 +238,16 @@ const SalesContent = () => {
         
         <div className="text-center">
           <a
-            href="https://wa.me/11967336619" 
+            href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="button-secondary inline-flex items-center gap-3 mx-auto px-8 py-4 text-lg"
+            onClick={(e) => {
+              // Previne comportamento padrão se a URL for inválida
+              if (whatsappUrl === '#') {
+                e.preventDefault();
+              }
+            }}
           >
             <MessageCircle size={24} className="animate-pulse" />
             Fale comigo no WhatsApp
