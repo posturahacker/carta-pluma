@@ -218,12 +218,9 @@ const SalesContent = () => {
           Se tiver alguma dúvida ou insegurança, quiser mais informações ou ver a ferramenta em ação:
         </p>
         
-        <div className="text-center mb-6">
-          <h3 className="heading-md mb-6 text-[#128C7E] text-center">
-            Vamos conversar!
-          </h3>
+        <div className="text-center">
           <a
-            href="https://wa.me/5511999999999" 
+            href="https://wa.me/11967336619" 
             target="_blank"
             rel="noopener noreferrer"
             className="button-secondary inline-flex items-center gap-3 mx-auto px-8 py-4 text-lg"
