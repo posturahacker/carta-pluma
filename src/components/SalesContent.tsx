@@ -20,7 +20,7 @@ const sanitizeUrl = (url: string): string => {
 
 const SalesContent = () => {
   // URL do WhatsApp sanitizada
-  const whatsappUrl = sanitizeUrl('https://wa.me/11967336619');
+  const whatsappUrl = sanitizeUrl('https://wa.me/+5511967336619');
 
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8">
