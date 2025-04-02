@@ -225,12 +225,12 @@ const SalesContent = () => {
         
         <div className="text-center mb-16">
           <a 
-            href="https://www.labfabrica.com.br"
+            href="https://payment.ticto.app/O5114D5AA"
             target="_blank"
             rel="noopener noreferrer"
             className="button-primary inline-block mx-auto mb-8"
             onClick={(e) => {
-              const url = new URL('https://www.labfabrica.com.br');
+              const url = new URL('https://payment.ticto.app/O5114D5AA');
               if (!url.protocol.startsWith('http')) {
                 e.preventDefault();
                 console.error('URL inválida');
