@@ -224,9 +224,21 @@ const SalesContent = () => {
         </p>
         
         <div className="text-center mb-16">
-          <button className="button-primary inline-block mx-auto mb-8">
+          <a 
+            href="https://www.labfabrica.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button-primary inline-block mx-auto mb-8"
+            onClick={(e) => {
+              const url = new URL('https://www.labfabrica.com.br');
+              if (!url.protocol.startsWith('http')) {
+                e.preventDefault();
+                console.error('URL inválida');
+              }
+            }}
+          >
             QUERO UMA ROTINA PLUMA
-          </button>
+          </a>
         </div>
         
         <p className="paragraph mb-8 text-center">
