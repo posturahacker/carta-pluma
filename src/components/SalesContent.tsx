@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AnimatedSection from './AnimatedSection';
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from 'lucide-react';
@@ -18,9 +18,86 @@ const sanitizeUrl = (url: string): string => {
   }
 };
 
+// Função para enviar evento para o Pinterest
+const sendPinterestEvent = async (eventName: string, eventData: any) => {
+  try {
+    const response = await fetch(`https://api.pinterest.com/v5/ad_accounts/${process.env.NEXT_PUBLIC_PINTEREST_AD_ACCOUNT_ID}/events`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.PINTEREST_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        data: [{
+          event_name: eventName,
+          action_source: 'web',
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+          user_data: {
+            client_ip_address: window.location.hostname,
+            client_user_agent: navigator.userAgent,
+            em: [],
+            ph: []
+          },
+          custom_data: {
+            currency: 'BRL',
+            value: 997.00,
+            content_name: 'Gestão Pluma',
+            content_type: 'product',
+            ...eventData
+          }
+        }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`Erro ao enviar evento para o Pinterest: ${data.message || response.statusText}`);
+    }
+
+    console.log('Evento enviado com sucesso para o Pinterest:', eventName);
+  } catch (error) {
+    console.error('Erro ao enviar evento para o Pinterest:', error);
+  }
+};
+
 const SalesContent = () => {
   // URL do WhatsApp sanitizada
   const whatsappUrl = sanitizeUrl('https://wa.me/+5511967336619');
+
+  // Rastrear visualização da página
+  useEffect(() => {
+    try {
+      sendPinterestEvent('page_view', {
+        page_name: 'sales_page',
+        content_name: 'Carta de Venda Pluma'
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear visualização da página:', error);
+    }
+  }, []);
+
+  const handlePurchaseClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    try {
+      // Prevenir o clique padrão para garantir que o evento seja enviado
+      e.preventDefault();
+
+      // Enviar evento de compra
+      await sendPinterestEvent('add_to_cart', {
+        content_name: 'Gestão Pluma',
+        content_type: 'product'
+      });
+
+      // Redirecionar para a página de pagamento
+      window.open('https://payment.ticto.app/O5114D5AA', '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Erro ao processar clique de compra:', error);
+      // Em caso de erro, ainda permite o redirecionamento
+      window.open('https://payment.ticto.app/O5114D5AA', '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8">
@@ -229,13 +306,7 @@ const SalesContent = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="button-primary inline-block mx-auto mb-8"
-            onClick={(e) => {
-              const url = new URL('https://payment.ticto.app/O5114D5AA');
-              if (!url.protocol.startsWith('http')) {
-                e.preventDefault();
-                console.error('URL inválida');
-              }
-            }}
+            onClick={handlePurchaseClick}
           >
             QUERO UMA ROTINA PLUMA
           </a>
