@@ -21,7 +21,7 @@ const sanitizeUrl = (url: string): string => {
 // Função para enviar evento para o Pinterest
 const sendPinterestEvent = async (eventName: string, eventData: any) => {
   try {
-    const response = await fetch(`https://api.pinterest.com/v5/ad_accounts/${process.env.NEXT_PUBLIC_PINTEREST_AD_ACCOUNT_ID}/events`, {
+    const response = await fetch(`https://api.pinterest.com/v5/ad_accounts/${process.env.NEXT_PUBLIC_PINTEREST_AD_ACCOUNT_ID}/events?test=true`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.PINTEREST_ACCESS_TOKEN}`,
@@ -33,7 +33,7 @@ const sendPinterestEvent = async (eventName: string, eventData: any) => {
           event_name: eventName,
           action_source: 'web',
           event_time: Math.floor(Date.now() / 1000),
-          event_id: `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+          event_id: `test_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
           user_data: {
             client_ip_address: window.location.hostname,
             client_user_agent: navigator.userAgent,
@@ -45,6 +45,7 @@ const sendPinterestEvent = async (eventName: string, eventData: any) => {
             value: 997.00,
             content_name: 'Gestão Pluma',
             content_type: 'product',
+            test_event_code: 'TEST12345', // Código de teste para identificação
             ...eventData
           }
         }]
@@ -54,12 +55,16 @@ const sendPinterestEvent = async (eventName: string, eventData: any) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(`Erro ao enviar evento para o Pinterest: ${data.message || response.statusText}`);
+      throw new Error(`Erro ao enviar evento de teste para o Pinterest: ${data.message || response.statusText}`);
     }
 
-    console.log('Evento enviado com sucesso para o Pinterest:', eventName);
+    console.log('Evento de teste enviado com sucesso para o Pinterest:', {
+      eventName,
+      eventId: `test_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+      response: data
+    });
   } catch (error) {
-    console.error('Erro ao enviar evento para o Pinterest:', error);
+    console.error('Erro ao enviar evento de teste para o Pinterest:', error);
   }
 };
 
