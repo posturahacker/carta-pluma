@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import AnimatedSection from './AnimatedSection';
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from 'lucide-react';
+import { trackEvent } from '@/services/analytics';
 
 // Função para validar e sanitizar URLs
 const sanitizeUrl = (url: string): string => {
@@ -75,7 +76,8 @@ const SalesContent = () => {
   // Rastrear visualização da página
   useEffect(() => {
     try {
-      sendPinterestEvent('page_view', {
+      // Rastrear visualização da página em todas as plataformas
+      trackEvent('pageview', {
         page_name: 'sales_page',
         content_name: 'Carta de Venda Pluma'
       });
@@ -89,10 +91,12 @@ const SalesContent = () => {
       // Prevenir o clique padrão para garantir que o evento seja enviado
       e.preventDefault();
 
-      // Enviar evento de compra
-      await sendPinterestEvent('add_to_cart', {
+      // Rastrear evento de compra em todas as plataformas
+      await trackEvent('purchase', {
         content_name: 'Gestão Pluma',
-        content_type: 'product'
+        content_type: 'product',
+        value: 997.00,
+        currency: 'BRL'
       });
 
       // Redirecionar para a página de pagamento
@@ -101,6 +105,24 @@ const SalesContent = () => {
       console.error('Erro ao processar clique de compra:', error);
       // Em caso de erro, ainda permite o redirecionamento
       window.open('https://payment.ticto.app/O5114D5AA', '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleWhatsAppClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    try {
+      // Prevenir comportamento padrão se a URL for inválida
+      if (whatsappUrl === '#') {
+        e.preventDefault();
+        return;
+      }
+
+      // Rastrear evento de contato em todas as plataformas
+      trackEvent('contact', {
+        contact_method: 'WhatsApp',
+        content_name: 'Contato WhatsApp'
+      });
+    } catch (error) {
+      console.error('Erro ao processar clique no WhatsApp:', error);
     }
   };
 
@@ -330,12 +352,7 @@ const SalesContent = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="button-secondary inline-flex items-center gap-3 mx-auto px-8 py-4 text-lg"
-            onClick={(e) => {
-              // Previne comportamento padrão se a URL for inválida
-              if (whatsappUrl === '#') {
-                e.preventDefault();
-              }
-            }}
+            onClick={handleWhatsAppClick}
           >
             <MessageCircle size={24} className="animate-pulse" />
             Fale comigo no WhatsApp
